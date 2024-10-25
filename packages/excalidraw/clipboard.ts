@@ -413,7 +413,13 @@ export const copyTextToSystemClipboard = async (
     try {
       // NOTE: doesn't work on FF on non-HTTPS domains, or when document
       // not focused
-      await navigator.clipboard.writeText(text || "");
+
+      // NOTE: SetTimeout is added because of how safari handles copying data to clipboard
+      // In Safari, navigator.clipboard API can be called within user events and not as a result of API call.
+      // Read more about it here -> https://webkit.org/blog/10247/new-webkit-features-in-safari-13-1/
+      setTimeout(async () => {
+        await navigator.clipboard.writeText(text || "");
+      }, 0);
       return;
     } catch (error: any) {
       console.error(error);
